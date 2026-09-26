@@ -1,0 +1,60 @@
+-- Creación de la Base de Datos para CUT & GO
+CREATE DATABASE IF NOT EXISTS cut_and_go;
+USE cut_and_go;
+
+-- 1. Tabla usuarios
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) UNIQUE NOT NULL,
+    telefono VARCHAR(10) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    rol ENUM('CLIENTE', 'COMERCIO', 'ADMIN') NOT NULL,
+    estado ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO') DEFAULT 'ACTIVO',
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ultimo_acceso DATETIME
+);
+
+-- 2. Tabla comercios
+CREATE TABLE comercios (
+    id_comercio INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    nombre_comercial VARCHAR(150) NOT NULL,
+    tipo_comercio ENUM('BARBERIA', 'TIENDA', 'OTRO') DEFAULT 'BARBERIA',
+    descripcion TEXT,
+    telefono VARCHAR(10),
+    direccion VARCHAR(200),
+    barrio VARCHAR(100),
+    horario_apertura TIME,
+    horario_cierre TIME,
+    imagen VARCHAR(255),
+    estado_aprobacion ENUM('PENDIENTE', 'APROBADO', 'RECHAZADO') DEFAULT 'PENDIENTE',
+    estado ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO') DEFAULT 'ACTIVO',
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+);
+
+-- 3. Tabla barberos
+CREATE TABLE barberos (
+    id_barbero INT AUTO_INCREMENT PRIMARY KEY,
+    id_comercio INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    foto VARCHAR(255),
+    estado BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_comercio) REFERENCES comercios(id_comercio)
+);
+
+-- 4. Tabla servicios
+CREATE TABLE servicios (
+    id_servicio INT AUTO_INCREMENT PRIMARY KEY,
+    id_comercio INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    duracion_minutos INT NOT NULL,
+    estado BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_comercio) REFERENCES comercios(id_comercio)
+);
